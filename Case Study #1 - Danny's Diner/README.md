@@ -14,9 +14,10 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ## Questions and Solutions
 
-Note that all queries were executed with MySQL
+> [!NOTE]
+All queries were executed with MySQL
 
-**1. What is the total amount each customer spent at the restaurant?
+## 1. What is the total amount each customer spent at the restaurant?
 
 #### Steps:
 - We will use **JOIN** to merge `dannys_diner.sales` and `dannys_diner.menu` tables together. This will give us data on which items were sold and the price per item.
@@ -44,7 +45,7 @@ ORDER BY total_spending DESC;
 
 ****
 
-**2. How many days has each customer visited the restaurant?
+## 2. How many days has each customer visited the restaurant?
 
 #### Steps:
 - Use **COUNT** to count each day an order was placed.
@@ -68,9 +69,9 @@ ORDER BY visit_count;
 | C           | 2           |
 ****
 
-**3. What was the first item from the menu purchased by each customer?
-
-*Because we only have the date of each order, and not the time, we will show any order made on the earliest date as the first order.*
+## 3. What was the first item from the menu purchased by each customer?
+> [!NOTE]
+Because we only have the date of each order, and not the time, we will show any order made on the earliest date as the first order.
 #### Steps:
 - Create a Common Table Expression (CTE) using **DENSE_RANK** to create a new column that assigns a rank to each order, by date. Our new column ``order_rank`` will output a 1 for each order a customer made on their earliest ``order_date``.
 - Now we will create an outer query where we **JOIN** ``dannys_diner.menu`` to ``dannys_diner.sales``. This allows us to display both the ``customer_id`` and ``product_name``. 
@@ -103,7 +104,7 @@ GROUP BY s.customer_id, m.product_name;
 | A           | curry        |
 | B           | curry        |
 | C           | ramen        |
-#### Note:
+#### Alternate Answer:
 - We can use **GROUP_CONCAT** to display each customer's first order on a single row.
 
 ````sql
@@ -135,7 +136,7 @@ GROUP BY s.customer_id;
 
 ****
 
-**4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+## 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 #### Steps:
 - Using ``COUNT(s.product_id)`` and ``GROUP BY m.product_name`` we can find how many times each item was purchased.
 - At the end of our code we use ``ORDER BY purchase_count DESC`` to sort by the highest count first. Then ``LIMIT 1`` to only show the first row.
@@ -157,7 +158,8 @@ LIMIT 1;
 | ------------ | -------------- |
 | ramen        | 8              |
 
-#### Note:
+
+#### Alternate Answer
 - The above code does not account for ties for the highest ``purchase_count``. The below code can be used to show any ties
 - **DENSE_RANK** is utilized to rank our count of purchases. This will return any ties in count as 1.
 - We then use ``WHERE s.to_ranking = 1`` to filter out any results without the highest count.
@@ -186,7 +188,7 @@ WHERE s.to_ranking = 1;
 
 ****
 
-**5. Which item was the most popular for each customer?
+## 5. Which item was the most popular for each customer?
 #### Steps:
 - We create a CTE named `orders`. Within the CTE, **COUNT** will find the amount of times each item was purchased by each customer.
 - **DENSE_RANK** will create a column ``to_ranking`` that ranks based off how many times each product was purchased by each customer.
@@ -221,14 +223,14 @@ WHERE o.to_ranking = 1;
 | B           | sushi        | 2               |
 | B           | ramen        | 2               |
 | C           | ramen        | 3               |
-#### Note:
+#### Alternate Answer
 - **GROUP_CONCAT** can be used to return the results so that each customer only has one row, similar to Question 3.
 
 ****
 
-**6. Which item was purchased first by the customer after they became a member?
-
-*We assume that any purchases made on a customers join date were made after they became a member.*
+## 6. Which item was purchased first by the customer after they became a member?
+> [!NOTE]
+We assume that any purchases made on a customers join date were made after they became a member.
 #### Steps:
 - A CTE named `sales_order` is created to rank each member's order, by date, after they became a member.
 - We ``JOIN dannys_diner.members`` to find when each member joined. By joining on `s.order_date >= mem.join_date` we only join orders that are made on, or after, a customer became a member.
@@ -267,9 +269,9 @@ ORDER BY s.customer_id;
 
 ****
 
-**7. Which item was purchased just before the customer became a member?
-
-*We assume that any purchases made on a customers join date were made after they became a member.*
+## 7. Which item was purchased just before the customer became a member?
+> [!NOTE]
+We assume that any purchases made on a customers join date were made after they became a member.
 #### Steps:
 - Since this question is similar to Question #6, we can start with the same query and make a few changes.
 - First we want to change the **ON** clause in our CTE `sales_order` to join on order dates made before the customer's `join_date`. This is seen in `AND s.order_date < mem.join_date`. 
@@ -307,9 +309,9 @@ ORDER BY s.customer_id;
 | B           | ramen        |
 | B           | sushi        |
 
-**8. What is the total items and amount spent for each member before they became a member?
-
-*We assume that any purchases made on a customers join date were made after they became a member.*
+## 8. What is the total items and amount spent for each member before they became a member?
+> [!NOTE]
+We assume that any purchases made on a customers join date were made after they became a member.
 #### Steps:
  - We will **JOIN** the `dannys_diner.members` and `dannys_diner.menu` tables. To filter out any orders made after a customer became a member, we will `JOIN dannys_diner.members` `ON s.order_date < mem.join_date`. 
  - By using `GROUP BY s.customer_id` and `SUM(m.price)` we will add the price of all orders made by each customer.
@@ -337,9 +339,9 @@ ORDER BY total_spent;
 
 ****
 
-**9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
-
-*We assume that only members can earn points and they start earning once they joined. We also assume that any purchases made on a customers join date were made after they became a member.*
+## 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+> [!NOTE]
+We assume that only members can earn points and they start earning once they joined. We also assume that any purchases made on a customers join date were made after they became a member.
 #### Steps:
 - To begin we join `dannys_diner.menu` for our price value and `dannys_diner.members` so that we only have orders of members after they joined. 
 - To find the amount of points each ordered item is worth we need to take:
@@ -374,7 +376,7 @@ ORDER BY total_points DESC;
 
 ****
 
-**10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+## 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 #### Steps:
 - Let's start with the query used in Question #9.
 - Adding a condition to our **CASE** statement let's us apply double points (x20) to any order date within 7 days of when the member joined. `s.order_date BETWEEN mem.join_date AND (mem.join_date +7)`
