@@ -1,4 +1,6 @@
 # Case Study #1: Danny's Diner
+<img src="https://github.com/atdames09/8-Week-SQL-Challenge/assets/166875318/83dc3de8-0ed9-4b32-88c3-6caa4e555820" alt="Image" width="500" height="520">
+
 ## Introduction
 Danny’s Diner is in need of your assistance to help the restaurant stay afloat - the restaurant has captured some very basic data from their few months of operation but have no idea how to use their data to help them run the business.
 
@@ -8,8 +10,7 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 ## Entity Relationship Diagram
 
-![image](LINK)
-
+![image](https://github.com/atdames09/8-Week-SQL-Challenge/assets/166875318/87dd9a24-d598-4b5f-af44-c03f0cd52908)
 ***
 
 ## Questions and Solutions
